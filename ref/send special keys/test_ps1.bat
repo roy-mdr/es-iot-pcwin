@@ -1,0 +1,1 @@
+powershell -ExecutionPolicy RemoteSigned -File ".\media_keys.ps1" playPause

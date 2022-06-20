@@ -1,0 +1,5 @@
+{
+	"client_id": "nodejs_phi",
+	"sub_server": "https://notify.estudiosustenta.myds.me/",
+	"pub_server": "https://estudiosustenta.myds.me/controll/res.php"
+}
