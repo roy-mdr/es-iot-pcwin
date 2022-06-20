@@ -16,6 +16,8 @@ Just use the same *client_id* in the `controllers` database to connect to the br
 
 1. Run `npm install`
 1. Replace the library *node-windows* manually (new one does not work)
+    1. Delete the folder `node_modules\node-windows`
+    1. Extract `res\node-windows.zip` to `node_modules\node-windows`
 1. Modify *config.json* with a custom *client_id* (and if necesary the pub and sub servers)
 1. Modify *service-install.js* and *service-uninstall.js* with the path pointing to *index.js*
 1. Run `node service-install.js`
