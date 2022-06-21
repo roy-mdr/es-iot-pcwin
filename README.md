@@ -16,12 +16,16 @@ Just use the same *client_id* in the `controllers` database to connect to the br
 
 1. Run `npm install`
 1. Make sure *NoPollSubscriber_NODEJS.js* is [up to date](https://github.com/roy-mdr/es-web-notify/blob/main/client/NoPollSubscriber_NODEJS.js).
-1. Replace the library *node-windows* manually (new one does not work)
-    1. Delete the folder `node_modules\node-windows`
-    1. Extract `res\node-windows.zip` to `node_modules\node-windows`
 1. Modify *config.json* with a custom *client_id* (and if necesary the pub and sub servers)
 1. Modify *service-install.js* and *service-uninstall.js* with the path pointing to *index.js*
 1. Run `node service-install.js`
+
+> The dependency package *node-windows* is locked to beta-6. If you want to try if a new version is now working just rever from `"node-windows": "^1.0.0-beta.6"` to `"node-windows": "^1.0.0-beta.6"` in the *package.json* file.
+> If you installed beta-6 and still is not working do the next:
+
+1. Replace the library *node-windows* manually
+    1. Delete the folder `node_modules\node-windows`
+    1. Extract `res\node-windows.zip` to `node_modules\node-windows`
 
 Now the service is installed and running
 

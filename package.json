@@ -10,6 +10,6 @@
   "license": "MIT",
   "dependencies": {
     "node-fetch": "^3.1.0",
-    "node-windows": "^1.0.0-beta.6"
+    "node-windows": "1.0.0-beta.6"
   }
 }
