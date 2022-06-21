@@ -15,7 +15,7 @@ Just use the same *client_id* in the `controllers` database to connect to the br
 > To fix this follow the instructions of *Install (run as user)*
 
 1. Run `npm install`
-1. Make sure [*NoPollSubscriber_NODEJS.js*](https://github.com/roy-mdr/es-web-notify/blob/main/client/NoPollSubscriber_NODEJS.js) is up to date.
+1. Make sure *NoPollSubscriber_NODEJS.js* is [up to date](https://github.com/roy-mdr/es-web-notify/blob/main/client/NoPollSubscriber_NODEJS.js).
 1. Replace the library *node-windows* manually (new one does not work)
     1. Delete the folder `node_modules\node-windows`
     1. Extract `res\node-windows.zip` to `node_modules\node-windows`
