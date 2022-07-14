@@ -44,6 +44,23 @@ exit /B
 
 CLS
 
+ECHO ===== INSTALLING PROTOCOL HANDLER =====
+
+rem REG ADD "HKEY_CLASSES_ROOT\esustenta"                     /f  /t "REG_SZ"     /v ""                       /d "URL:esustenta Protocol"
+    REG ADD "HKEY_CLASSES_ROOT\esustenta"                     /f  /t "REG_SZ"     /v "URL Protocol"           /d ""
+rem REG ADD "HKEY_CLASSES_ROOT\esustenta"                     /f  /t "REG_DWORD"  /v "UseOriginalUrlEncoding" /d "1"
+    REG ADD "HKEY_CLASSES_ROOT\esustenta\DefaultIcon"         /f  /t "REG_SZ"     /v ""                       /d "\"%~dp0res\es_protocol_handler.exe\",1"
+    REG ADD "HKEY_CLASSES_ROOT\esustenta\shell\open\command"  /f  /t "REG_SZ"     /v ""                       /d "\"%~dp0res\es_protocol_handler.exe\" \"%%1\""
+
+REG ADD "HKEY_CLASSES_ROOT\Local Settings\Software\Microsoft\Windows\Shell\MuiCache"  /f  /t "REG_SZ" /v "%~dp0res\es_protocol_handler.exe.ApplicationCompany" /d "Estudio Sustenta"
+REG ADD "HKEY_CLASSES_ROOT\Local Settings\Software\Microsoft\Windows\Shell\MuiCache"  /f  /t "REG_SZ" /v "%~dp0res\es_protocol_handler.exe.FriendlyAppName"    /d "Estudio Sustenta App"
+
+ECHO.
+
+
+
+ECHO ===== INSTALLING AUTO-RUN USER SERVICE =====
+
 rem REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run /f /v es_svcwkr /t REG_SZ /d """"%~dp0start.exe""" ""%njspath%"""
 REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run /f /v es_svcwkr /t REG_SZ /d """"%~dp0run-silent.bat""""
 
@@ -51,5 +68,14 @@ ECHO START /D "%~dp0" silent.exe %njspath% > %~dp0run-silent.bat
 
 START /D "%~dp0" run-silent.bat
 
+ECHO.
+
+
+
+ECHO ===== ALL DONE =====
+
 PAUSE
+
+
+
 EXIT
