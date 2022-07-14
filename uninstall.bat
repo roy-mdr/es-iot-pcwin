@@ -24,6 +24,14 @@ exit /B
 
 CLS
 
+ECHO ===== KILLING PROCESS =====
+
+TASKKILL /F /IM es_user_svcwkr.exe /T
+
+ECHO.
+
+
+
 ECHO ===== UNINSTALLING PROTOCOL HANDLER =====
 
 REG DELETE "HKEY_CLASSES_ROOT\esustenta" /f
@@ -35,9 +43,9 @@ ECHO.
 
 
 
-ECHO ===== UNINSTALLING AUTO-RUN USER SERVICE =====
+ECHO ===== UNINSTALLING AUTO-RUN USER SERVICE (FOR ALL USERS) =====
 
-REG DELETE HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run /f /v es_svcwkr
+REG DELETE HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run /f /v es_user_svcwkr
 
 ECHO.
 

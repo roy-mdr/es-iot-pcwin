@@ -1,14 +1,29 @@
 @ECHO OFF
 
 IF [%1]==[] (
-  GOTO ASKPATH
+  GOTO CHECKNODEJS
 ) ELSE (
   GOTO GOTPATH
 )
 
+:CHECKNODEJS
+node -v >nul 2>&1
+IF %errorLevel% == 0 (
+  ECHO NODE.JS INSTALLED
+  SET njspath=node
+  ECHO Path: %njspath%
+  GOTO :CHECKADMIN
+  EXIT
+) ELSE (
+  ECHO NODE.JS NOT INSTALLED
+  GOTO ASKPATH
+  EXIT
+)
+
 :ASKPATH
+CLS
 SET /P njspath=Drag and drop "node.exe" from NodeJS install folder here: 
-set njspath=%njspath:"=%
+SET njspath=%njspath:"=%
 ECHO Path: %njspath%
 GOTO :CHECKADMIN
 
@@ -59,14 +74,20 @@ ECHO.
 
 
 
-ECHO ===== INSTALLING AUTO-RUN USER SERVICE =====
+ECHO ===== INSTALLING AUTO-RUN USER SERVICE (FOR ALL USERS) =====
 
-rem REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run /f /v es_svcwkr /t REG_SZ /d """"%~dp0start.exe""" ""%njspath%"""
-REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run /f /v es_svcwkr /t REG_SZ /d """"%~dp0run-silent.bat""""
+rem REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run /f /v es_user_svcwkr /t REG_SZ /d """"%~dp0es_user_svcwkr.exe""" ""%njspath%"""
+REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run /f /v es_user_svcwkr /t REG_SZ /d """"%~dp0run-es_user_svcwkr.bat""""
 
-ECHO START /D "%~dp0" silent.exe %njspath% > %~dp0run-silent.bat
+ECHO START /D "%~dp0" es_user_svcwkr.exe %njspath% > %~dp0run-es_user_svcwkr.bat
 
-START /D "%~dp0" run-silent.bat
+ECHO.
+
+
+
+ECHO ===== RUNNING PROCESS =====
+
+START /D "%~dp0" run-es_user_svcwkr.bat
 
 ECHO.
 

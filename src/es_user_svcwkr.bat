@@ -1,5 +1,8 @@
 @ECHO OFF
-TITLE Silent Start
+
+REM THIS BAT WILL BE CONVERTED TO .EXE WITH "Invisible application" MODE
+
+TITLE Silent Estudio Sustenta service worker (user)
 
 IF [%1]==[] (
   GOTO ASKPATH
