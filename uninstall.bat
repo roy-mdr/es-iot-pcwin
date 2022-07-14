@@ -51,6 +51,17 @@ ECHO.
 
 
 
+ECHO ===== CLEANING FILES =====
+
+REM DEL /F %~dp0service-install.js
+REM DEL /F %~dp0service-uninstall.js
+REM DEL /F %~dp0test-indexjs.bat
+DEL /F %~dp0run-es_user_svcwkr.bat
+
+ECHO.
+
+
+
 ECHO ===== ALL DONE =====
 
 PAUSE

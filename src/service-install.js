@@ -4,7 +4,7 @@ var Service = require('node-windows').Service;
 var svc = new Service({
   name:'ES_svcwkr',
   description: 'Estudio Sustenta service worker',
-  script: 'D:\\portables\\laragon\\www\\rt-svcwkr\\index.js',
+  script: '<APP_PATH>',
   nodeOptions: [
     '--harmony',
     '--max_old_space_size=512'

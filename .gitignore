@@ -5,5 +5,12 @@ node_modules
 daemon
 
 nope.txt
-
 run-es_user_svcwkr.bat
+service-install.js
+service-uninstall.js
+test-indexjs.bat
+install-npm.bat
+install-service.bat
+uninstall-service.bat
+config.json
+!src/*
