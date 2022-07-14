@@ -10,6 +10,15 @@ const NPS = require('./NoPollSubscriber_NODEJS.js');
 let fs = require('fs');
 let config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
 
+let osUser = require("os").userInfo().username;
+console.log("Running as:", osUser);
+/*fs.writeFile('./user.txt', osUser, err => {
+	if (err) {
+		console.error(err);
+	}
+	// file written successfully
+});*/
+
 
 //Async:
 /*let fs = require('fs');
@@ -178,6 +187,8 @@ function callbackOnParsed(data) {
 
 	if (res.e.type == 'pwrctrl') {
 
+		if (osUser !== "SYSTEM") return; // This command can be run by SYSTEM, so don't run it under User
+
 		if (res.e.detail.data == 'sleep') {
 
 			subscription.abort();
@@ -222,6 +233,8 @@ function callbackOnParsed(data) {
 
 	if (res.e.type == 'mediactrl') {
 
+		if (osUser === "SYSTEM") return; // This command can't be run by SYSTEM, so run it under User
+
 		exec(`".\\res\\media_keys.exe" ${res.e.detail.data}`, (error, stdout, stderr) => {
 			if (error) {
 				console.log(`error: ${error.message}`);
@@ -240,6 +253,9 @@ function callbackOnParsed(data) {
 	}
 
 	if (res.e.type == 'clipctrl') {
+
+		if (osUser === "SYSTEM") return; // This command can't be run by SYSTEM, so run it under User
+
 		// require('child_process').spawn('clip').stdin.end(res.e.detail||"");
 		copy(res.e.detail.data.text);
 
@@ -261,6 +277,8 @@ function callbackOnParsed(data) {
 
 	if (res.e.type == 'popup') {
 
+		if (osUser !== "SYSTEM") return; // This command can be run by SYSTEM, so don't run it under User
+
 		console.log(res.e.detail)
 		
 		exec(`msg ${res.e.detail.data.user} \"${res.e.detail.data.message}\"`, (error, stdout, stderr) => {
@@ -281,6 +299,7 @@ function callbackOnParsed(data) {
 
 	if (res.e.type == 'sessioninfo') {
 
+		if (osUser !== "SYSTEM") return; // This command can be run by SYSTEM, so don't run it under User
 
 		getLockscreenUsers()
 			.then( (lockscreenUsers) => {
@@ -379,62 +398,66 @@ function callbackOnParsed(data) {
 
 	if (res.e.type == 'usersinfo') {
 
-			exec("net user", (error, stdout, stderr) => {
-				if (error) {
-					console.log(`error: ${error.message}`);
-					logToDb(res.e.detail.device, `error: ${error.message}`);
-					return;
-				}
-				if (stderr) {
-					console.log(`stderr: ${stderr}`);
-					logToDb(res.e.detail.device, `stderr: ${stderr}`);
-					return;
-				}
-				console.log(`stdout:\r\n${stdout}`);
+		if (osUser === "SYSTEM") return; // This command can't be run by SYSTEM, so run it under User
+
+		exec("net user", (error, stdout, stderr) => {
+			if (error) {
+				console.log(`error: ${error.message}`);
+				logToDb(res.e.detail.device, `error: ${error.message}`);
+				return;
+			}
+			if (stderr) {
+				console.log(`stderr: ${stderr}`);
+				logToDb(res.e.detail.device, `stderr: ${stderr}`);
+				return;
+			}
+			console.log(`stdout:\r\n${stdout}`);
 
 
-				const usersInfo = [];
-				const outLines = stdout.split('\r\n');
+			const usersInfo = [];
+			const outLines = stdout.split('\r\n');
 
-				for (let i = 0; i < outLines.length; i++) {
+			for (let i = 0; i < outLines.length; i++) {
 
-					if (i > 3 && i < outLines.length-3) { // Strip useless lines
-						console.log(`${i}:`, outLines[i]);
+				if (i > 3 && i < outLines.length-3) { // Strip useless lines
+					console.log(`${i}:`, outLines[i]);
 
-						const usersInLine = outLines[i].split(/\s{2,}/);
+					const usersInLine = outLines[i].split(/\s{2,}/);
 
-						for (let i = 0; i < usersInLine.length; i++) {
-							if (usersInLine[i] != "") usersInfo.push(usersInLine[i]);
-						}
+					for (let i = 0; i < usersInLine.length; i++) {
+						if (usersInLine[i] != "") usersInfo.push(usersInLine[i]);
 					}
 				}
+			}
 
 
-				// RETURN SESSION INFO
-				console.log( usersInfo );
+			// RETURN SESSION INFO
+			console.log( usersInfo );
 
-				fetch(`${config.pub_server}?device=${res.e.detail.device}&log=devolviendo_informacion_de_usuarios_registrados_en_pc`, {
-					method: 'post',
-					body: JSON.stringify( {
-						type: "usersinfo",
-						data: usersInfo,
-						whisper: res.e.detail.whisper
-					} ),
-					headers: {
-						'Content-Type': 'application/json',
-						'X-Auth-Bearer': config.client_id
-					}
-				})
-					.then( (res) => res.text() )
-					// .then( (res) => res.json() )
-					.then( (data) => console.log(data) )
+			fetch(`${config.pub_server}?device=${res.e.detail.device}&log=devolviendo_informacion_de_usuarios_registrados_en_pc`, {
+				method: 'post',
+				body: JSON.stringify( {
+					type: "usersinfo",
+					data: usersInfo,
+					whisper: res.e.detail.whisper
+				} ),
+				headers: {
+					'Content-Type': 'application/json',
+					'X-Auth-Bearer': config.client_id
+				}
+			})
+				.then( (res) => res.text() )
+				// .then( (res) => res.json() )
+				.then( (data) => console.log(data) )
 
-			});
+		});
 
 		
 	}
 
 	if (res.e.type == 'status') {
+
+		// Run this command under any osUser!
 
 		process.emit('eventtt', "aloo");
 

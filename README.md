@@ -60,7 +60,7 @@ It will create the auto-start command in registry.
 
 ## To Do
 
-- [ ] Separate commands for run under user or system (atm some commands run duplicated)
+- [x] Separate commands for run under user or system (atm some commands run duplicated)
 - [ ] Organize files
 - [ ] Make easier installers
 - [ ] Make auto-update
