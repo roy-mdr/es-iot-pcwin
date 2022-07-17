@@ -1,7 +1,8 @@
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
-const { exec } = require("child_process");
-const NPS = require('./NoPollSubscriber_NODEJS.js');
+const { exec }  = require("child_process");
+const SleepTime = require('./lib/sleeptime');
+const NPS       = require('./lib/NoPollSubscriber_NODEJS.js');
 
 
 
@@ -27,6 +28,22 @@ fs.readFile('./config.json', 'utf8', function (err, data) {
 	if (err) throw err;
 	config = JSON.parse(data);
 });*/
+
+
+
+
+
+
+
+
+
+
+
+/* If the system idles for 5 seconds, reestablish connection. */
+const sleepy = new SleepTime( (diff, date) => {
+		console.log("System slept for " + Math.round(diff / 1000) + " seconds" + " and woke up at " + date);
+		subscription.start();
+	}, 5000);
 
 
 
@@ -187,11 +204,12 @@ function callbackOnParsed(data) {
 
 	if (res.e.type == 'pwrctrl') {
 
+		subscription.stop();
+		subscription.abort();
+
 		if (osUser !== "SYSTEM") return; // This command can be run by SYSTEM, so don't run it under User
 
 		if (res.e.detail.data == 'sleep') {
-
-			subscription.abort();
 
 			exec("rundll32.exe powrprof.dll, SetSuspendState Sleep", (error, stdout, stderr) => {
 				if (error) {
@@ -210,8 +228,6 @@ function callbackOnParsed(data) {
 		}
 
 		if (res.e.detail.data == 'off') {
-
-			subscription.abort();
 
 			exec("shutdown /p /f", (error, stdout, stderr) => {
 				if (error) {
@@ -528,7 +544,7 @@ function callbackOnStateChange(st) {
 
 
 
-let subscription = new NPS({
+const subscription = new NPS({
 		url: config.sub_server,
 		method: 'POST',
 		data: {
