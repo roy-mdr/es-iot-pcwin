@@ -1,0 +1,9 @@
+NirSoft:
+	https://www.nirsoft.net/utils/sound_volume_view.html#command_line
+
+SetVol:
+	https://rlatour.com/setvol/
+	https://github.com/roblatour/setvol
+
+PowerShell cmdlets:
+	https://github.com/frgnca/AudioDeviceCmdlets
