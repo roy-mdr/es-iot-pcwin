@@ -202,6 +202,19 @@ function callbackOnParsed(data) {
 
 	const res = JSON.parse(data);
 
+
+
+	if (res.ep.emitted == "@SERVER@") {
+
+		connId      = res.e.detail.connid;
+		connSecret  = res.e.detail.secret;
+		connTimeout = res.e.detail.timeout;
+
+		begginAliveLoop();
+	}
+
+
+
 	if (res.e.type == 'pwrctrl') {
 
 		subscription.stop();
@@ -525,11 +538,81 @@ function callbackOnSubscribe() {
 
 function callbackOnStateChange(st) {
 	console.log('state changed', st.value, st.state);
+
+	// console.log(st);
+	if (st.value == -1) {
+		// document.getElementById('controll').style.border = "1px solid #607d8b"; // Offline
+		notifyConnected = false;
+	}
+
+	if (st.value ==  0) {
+		// document.getElementById('controll').style.border = "1px solid #f44336"; // Disconnected from subscription endpoint
+		notifyConnected = false;
+	}
+
+	if (st.value ==  1) {
+		// document.getElementById('controll').style.border = "1px solid #ffc107"; // Connecting
+		notifyConnected = false;
+	}
+
+	if (st.value ==  2) {
+		// document.getElementById('controll').style.border = "1px solid #cddc39"; // Connected
+		notifyConnected = true;
+	}
 }
 
 // process.on('eventtt', (ev) => {console.log(ev);})
 
 
+
+
+
+
+
+
+
+
+let connId;
+let connSecret;
+let connTimeout;
+let aliveLoop;
+let notifyConnected;
+
+function begginAliveLoop() {
+
+	clearTimeout(aliveLoop);
+
+	aliveLoop = setTimeout(function() {
+
+		if (!notifyConnected) {
+			clearTimeout(aliveLoop);
+			return;
+		}
+
+		const refreshURL = `${config.sub_server}alive`;
+
+		fetch(refreshURL, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({connid: connId, secret: connSecret})
+		})
+			.then(response => response.json())
+			.then(data => {
+				connId      = data.connid;
+				connSecret  = data.secret;
+				connTimeout = data.timeout;
+			})
+			.catch(error => {
+				console.error('Error on Alive request:', error);
+				clearTimeout(aliveLoop);
+			})
+
+		begginAliveLoop();
+
+	}, connTimeout - 3000); // timeout - 3 seconds
+}
 
 
 
