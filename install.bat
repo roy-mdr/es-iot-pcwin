@@ -75,7 +75,7 @@ ECHO.
 
 ECHO ===== SETTING UP SERVICE BATCH FILES =====
 
-ECHO START "" %njspath% %~dp0index.js > %~dp0test-indexjs.bat
+ECHO START "Testing Window" %njspath% %~dp0index.js > %~dp0test-indexjs.bat
 ECHO START "" %njspath% %~dp0service-install.js > %~dp0install-service.bat
 ECHO START "" %njspath% %~dp0service-uninstall.js > %~dp0uninstall-service.bat
 
