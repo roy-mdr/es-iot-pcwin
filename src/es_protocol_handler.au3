@@ -39,7 +39,7 @@ $protocol = "esustenta"
 If $CmdLine[0] = 0 Then Exit
 
 If StringInStr($CmdLine[1], $protocol) = 1 Then
-	calledByProtocol( DecodeUrl($CmdLine[1]) )
+	calledByProtocol( urldecode($CmdLine[1]) )
 EndIf
 
 
@@ -77,7 +77,7 @@ EndFunc
 
 
 Func _command_explorer($path)
-	Run("explorer.exe " & $path)
+	Run('explorer.exe "' & $path & '"')
 EndFunc
 
 
@@ -85,62 +85,41 @@ EndFunc
 
 
 
-Func DecodeUrl($src)
-    Local $i
-    Local $ch
-    Local $buff
+Func urlencode($str, $plus = True) ; if second param = true (default) it will encode spaces as plus. If false - the space will be encoded as "%20" (not compliant)
+	Local $i, $return, $tmp, $exp
+	$return = ""
+	$exp = "[a-zA-Z0-9-._~]"
+	If $plus Then
+		$str = StringReplace ($str, " ", "+")
+		$exp = "[a-zA-Z0-9-._~+]"
+	EndIf
+	For $i = 1 To StringLen($str)
+		$tmp = StringMid($str, $i, 1)
+		If StringRegExp($tmp, $exp, 0) = 1 Then
+			$return &= $tmp
+		Else
+			$return &= StringMid(StringRegExpReplace(StringToBinary($tmp, 4), "([0-9A-Fa-f]{2})", "%$1"), 3)
+		EndIf
+	Next
+	Return $return
+EndFunc
 
-    ;Init Counter
-    $i = 1
-
-    While ($i <= StringLen($src))
-        $ch = StringMid($src, $i, 1)
-        ;Correct spaces
-        If ($ch = "+") Then
-            $ch = " "
-        EndIf
-        ;Decode any hex values
-        If ($ch = "%") Then
-            $ch = Chr(Dec(StringMid($src, $i + 1, 2)))
-            $i += 2
-        EndIf
-        ;Build buffer
-        $buff &= $ch
-        ;Inc Counter
-        $i += 1
-    WEnd
-
-    Return $buff
-EndFunc   ;==>DecodeUrl
-
-Func EncodeUrl($src)
-    Local $i
-    Local $ch
-    Local $NewChr
-    Local $buff
-
-    ;Init Counter
-    $i = 1
-
-    While ($i <= StringLen($src))
-        ;Get byte code from string
-        $ch = Asc(StringMid($src, $i, 1))
-
-        ;Look for what bytes we have
-        Switch $ch
-            ;Looks ok here
-            Case 45, 46, 48 To 57, 65 To 90, 95, 97 To 122, 126
-                $buff &= Chr($ch)
-                ;Space found
-            Case 32
-                $buff &= "+"
-            Case Else
-                ;Convert $ch to hexidecimal
-                $buff &= "%" & Hex($ch, 2)
-        EndSwitch
-        ;INC Counter
-        $i += 1
-    WEnd
-
-    Return $buff
-EndFunc   ;==>EncodeUrl
+Func urldecode($str)
+	Local $i, $return, $tmp
+	$return = ""
+	$str = StringReplace ($str, "+", " ")
+	For $i = 1 To StringLen($str)
+		$tmp = StringMid($str, $i, 3)
+		If StringRegExp($tmp, "%[0-9A-Fa-f]{2}", 0) = 1 Then
+			$i += 2
+			While StringRegExp(StringMid($str, $i+1, 3), "%[0-9A-Fa-f]{2}", 0) = 1
+				$tmp = $tmp & StringMid($str, $i+2, 2)
+				$i += 3
+			Wend
+			$return &= BinaryToString(StringRegExpReplace($tmp, "%([0-9A-Fa-f]*)", "0x$1"), 4)
+		Else
+			$return &= StringMid($str, $i, 1)
+		EndIf
+	Next
+	Return $return
+EndFunc
