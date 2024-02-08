@@ -645,5 +645,5 @@ const subscription = new NPS({
 	callbackOnStateChange
 );
 
-// subscription.setBindingKeyUrl('https://estudiosustenta.myds.me/test/session/bindUser');
+// subscription.setBindingKeyUrl('https://estudiosustenta.com/test/session/bindUser');
 subscription.start();

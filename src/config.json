@@ -1,5 +1,5 @@
 {
 	"client_id": "<PC_CLID>",
-	"sub_server": "https://notify.estudiosustenta.myds.me/",
-	"pub_server": "https://estudiosustenta.myds.me/controll/res.php"
+	"sub_server": "https://notify.estudiosustenta.com/",
+	"pub_server": "https://estudiosustenta.com/controll/res.php"
 }
