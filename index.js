@@ -365,6 +365,47 @@ function callbackOnParsed(data) {
 		});
 	}
 
+	if (res.e.type == 'applaunch') {
+
+		if (osUser === "SYSTEM") return; // This command can't be run by SYSTEM, so run it under User
+
+		if (res.e.detail.data == 'teamviewer') {
+
+			exec('start "" "%ProgramFiles(x86)%\\TeamViewer\\TeamViewer.exe"', (error, stdout, stderr) => {
+				if (error) {
+					console.log(`error: ${error.message}`);
+					logToDb(res.e.detail.device, `error: ${error.message}`);
+					return;
+				}
+				if (stderr) {
+					console.log(`stderr: ${stderr}`);
+					logToDb(res.e.detail.device, `stderr: ${stderr}`);
+					return;
+				}
+				console.log(`stdout:\r\n${stdout}`);
+
+				// RETURN ACKNOWLEDGE
+
+				fetch(`${config.pub_server}?device=${res.e.detail.device}&log=launching_app_teamviewer`, {
+					method: 'post',
+					body: JSON.stringify( {
+						type: "status",
+						data: "Starting TeamViewer",
+						whisper: res.e.detail.whisper
+					} ),
+					headers: {
+						'Content-Type': 'application/json',
+						'X-Auth-Bearer': config.client_id
+					}
+				})
+					.then( (res) => res.text() )
+					// .then( (res) => res.json() )
+					.then( (data) => console.log(data) );
+			});
+		}
+
+	}
+
 	if (res.e.type == 'sessioninfo') {
 
 		if (osUser !== "SYSTEM") return; // This command can be run by SYSTEM, so don't run it under User
