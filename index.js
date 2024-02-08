@@ -260,6 +260,45 @@ function callbackOnParsed(data) {
 
 	}
 
+	if (res.e.type == 'sessionlock') {
+
+		if (osUser === "SYSTEM") return; // This command can't be run by SYSTEM, so run it under User
+
+		exec("rundll32.exe user32.dll,LockWorkStation", (error, stdout, stderr) => {
+			if (error) {
+				console.log(`error: ${error.message}`);
+				logToDb(res.e.detail.device, `error: ${error.message}`);
+				return;
+			}
+			if (stderr) {
+				console.log(`stderr: ${stderr}`);
+				logToDb(res.e.detail.device, `stderr: ${stderr}`);
+				return;
+			}
+			console.log(`stdout:\r\n${stdout}`);
+			logToDb(res.e.detail.device, `Session locked`);
+
+			// RETURN ACKNOWLEDGE
+
+			fetch(`${config.pub_server}?device=${res.e.detail.device}&log=locking_session_ok`, {
+				method: 'post',
+				body: JSON.stringify( {
+					type: "status",
+					data: "locking session",
+					whisper: res.e.detail.whisper
+				} ),
+				headers: {
+					'Content-Type': 'application/json',
+					'X-Auth-Bearer': config.client_id
+				}
+			})
+				.then( (res) => res.text() )
+				// .then( (res) => res.json() )
+				.then( (data) => console.log(data) );
+		});
+
+	}
+
 	if (res.e.type == 'mediactrl') {
 
 		if (osUser === "SYSTEM") return; // This command can't be run by SYSTEM, so run it under User

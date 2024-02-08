@@ -66,7 +66,7 @@ It will create the auto-start command in registry.
 - [ ] Make auto-update
 - [x] Won't disconnect connection when turned off or sleeped (possible solution with websockets or direct TCP)
 - [x] Will reconnect if PC delays more than 10 seconds to turn off or sleep (possible solution with websockets or direct TCP)
-- [ ] Add session-lock (Windows+L) action
+- [x] Add session-lock (Windows+L) action
 - [ ] Add launch TeamViewer action
 - [x] Add return ipconfig command action
 
