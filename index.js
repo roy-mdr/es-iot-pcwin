@@ -422,7 +422,6 @@ function callbackOnParsed(data) {
 
 		} );
 
-		
 	}
 
 	if (res.e.type == 'usersinfo') {
@@ -481,7 +480,93 @@ function callbackOnParsed(data) {
 
 		});
 
-		
+	}
+
+	if (res.e.type == 'networkinfo') {
+
+		if (osUser !== "SYSTEM") return; // This command can be run by SYSTEM, so don't run it under User
+
+		exec("ipconfig /all", (error, stdout, stderr) => {
+			if (error) {
+				console.log(`error: ${error.message}`);
+				logToDb(res.e.detail.device, `error: ${error.message}`);
+				return;
+			}
+			if (stderr) {
+				console.log(`stderr: ${stderr}`);
+				logToDb(res.e.detail.device, `stderr: ${stderr}`);
+				return;
+			}
+			console.log(`stdout:\r\n${stdout}`);
+
+
+			const networkInfo = {};
+			const outLines = stdout.split('\r\n');
+			let currentAdapter = "";
+			let lastKey = ""
+
+			for (let i = 0; i < outLines.length; i++) {
+				let line = outLines[i];
+
+				if (line.length < 1) continue;
+
+				if (line.substring(0,3) == "   ") {
+					// line is content
+
+					lineArr = line.split(" : ");
+					contKey = lineArr[0];
+					contVal = lineArr[1];
+
+					if (contVal !== undefined) {
+						// Clean key
+						contKey = contKey.replace(/^\s+|(\.|\s)+(\s\.)+$/gm,'');
+						networkInfo[currentAdapter][contKey] = contVal;
+						lastKey = contKey;
+					} else {
+						if ( !Array.isArray(networkInfo[currentAdapter][lastKey]) ) {
+							lkVal = networkInfo[currentAdapter][lastKey];
+							networkInfo[currentAdapter][lastKey] = [lkVal];
+						}
+
+						networkInfo[currentAdapter][lastKey].push(contKey.replace(/^\s+/gm,''));
+					}
+
+				} else {
+					// line is title
+
+					// Clean line
+					if (line[line.length-1] == ":") {
+						line = line.substring(0, (line.length-1) );
+					}
+
+					currentAdapter = line;
+					networkInfo[currentAdapter] = {};
+				}
+
+			}
+
+
+			// RETURN NETWORK INFO
+			console.log( networkInfo );
+
+			fetch(`${config.pub_server}?device=${res.e.detail.device}&log=devolviendo_informacion_de_red`, {
+				method: 'post',
+				body: JSON.stringify( {
+					type: "networkinfo",
+					data: networkInfo,
+					whisper: res.e.detail.whisper
+				} ),
+				headers: {
+					'Content-Type': 'application/json',
+					'X-Auth-Bearer': config.client_id
+				}
+			})
+				.then( (res) => res.text() )
+				// .then( (res) => res.json() )
+				.then( (data) => console.log(data) )
+
+		});
+
 	}
 
 	if (res.e.type == 'status') {

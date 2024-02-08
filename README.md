@@ -68,5 +68,5 @@ It will create the auto-start command in registry.
 - [x] Will reconnect if PC delays more than 10 seconds to turn off or sleep (possible solution with websockets or direct TCP)
 - [ ] Add session-lock (Windows+L) action
 - [ ] Add launch TeamViewer action
-- [ ] Add return ipconfig command action
+- [x] Add return ipconfig command action
 
